@@ -60,13 +60,13 @@ auto blur(std::vector<unsigned char> frame, int frame_cols,
   return std::move(result);
 }
 
-grppi::dynamic_execution execution_mode(const std::string & opt) 
+grppi::dynamic_execution execution_mode(const std::string & opt, int nr_threads) 
 {
   using namespace grppi;
   if ("seq" == opt) return sequential_execution{};
-  if ("thr" == opt) return parallel_execution_native{};
-  if ("omp" == opt) return parallel_execution_omp{};
-  if ("tbb" == opt) return parallel_execution_tbb{};
+  if ("thr" == opt) return parallel_execution_native{nr_threads};
+  if ("omp" == opt) return parallel_execution_omp{nr_threads};
+  if ("tbb" == opt) return parallel_execution_tbb{nr_threads};
   return {};
 }
 
@@ -192,16 +192,16 @@ void save_bmp(std::string output_file,
 int main(int argc, char *argv[])
 {
   // parameters checking
-  if(argc != 5){
+  if(argc != 6){
     std::cout << "Usage: " << argv[0]
-              << " kernel input output mode" << std::endl;
+              << " kernel input output mode nr_threads" << std::endl;
     return -1;
   }
 
   std::string kernel_file(argv[1]), 
   input_file(argv[2]),
   output_file(argv[3]);
-  auto exec = execution_mode(argv[4]);
+  auto exec = execution_mode(argv[4], std::stoi(argv[5]));
 
   std::vector<int> kernel;
   std::vector<unsigned char> header_info, red, green, blue;

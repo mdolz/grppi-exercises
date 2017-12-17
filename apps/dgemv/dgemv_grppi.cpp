@@ -57,14 +57,14 @@ void dgemv(const std::vector<std::vector<double>>& mat,
   // ****** to here ***** //
 }
 
-grppi::dynamic_execution execution_mode(const std::string & opt) 
+grppi::dynamic_execution execution_mode(const std::string & opt, int nr_threads) 
 {
-   using namespace grppi;
-   if ("seq" == opt) return sequential_execution{};
-   if ("thr" == opt) return parallel_execution_native{};
-   if ("omp" == opt) return parallel_execution_omp{};
-   if ("tbb" == opt) return parallel_execution_tbb{};
-   return {};
+  using namespace grppi;
+  if ("seq" == opt) return sequential_execution{};
+  if ("thr" == opt) return parallel_execution_native{nr_threads};
+  if ("omp" == opt) return parallel_execution_omp{nr_threads};
+  if ("tbb" == opt) return parallel_execution_tbb{nr_threads};
+  return {};
 }
 
 void generate(std::vector<std::vector<double>>& mat,
@@ -84,15 +84,15 @@ void generate(std::vector<std::vector<double>>& mat,
 int main(int argc, char *argv[])
 {
   // parameters checking
-  if (argc != 4){
+  if (argc != 5){
     std::cout << "Usage: " << argv[0]
-              << " rows cols mode" << std::endl;
+              << " rows cols mode nr_threads" << std::endl;
     return -1;
   }
 
   int rows = std::stoi(argv[1]),
       cols = std::stoi(argv[2]);
-  auto exec = execution_mode(argv[3]);      
+  auto exec = execution_mode(argv[3], std::stoi(argv[4]));      
 
   std::vector<std::vector<double>> 
     mat(rows, std::vector<double>(cols));

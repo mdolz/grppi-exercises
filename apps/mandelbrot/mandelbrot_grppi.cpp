@@ -59,14 +59,14 @@ auto mandelbrot(int width, int height,
   return std::move(image);
 }
 
-grppi::dynamic_execution execution_mode(const std::string & opt) 
+grppi::dynamic_execution execution_mode(const std::string & opt, int nr_threads) 
 {
-   using namespace grppi;
-   if ("seq" == opt) return sequential_execution{};
-   if ("thr" == opt) return parallel_execution_native{};
-   if ("omp" == opt) return parallel_execution_omp{};
-   if ("tbb" == opt) return parallel_execution_tbb{};
-   return {};
+  using namespace grppi;
+  if ("seq" == opt) return sequential_execution{};
+  if ("thr" == opt) return parallel_execution_native{nr_threads};
+  if ("omp" == opt) return parallel_execution_omp{nr_threads};
+  if ("tbb" == opt) return parallel_execution_tbb{nr_threads};
+  return {};
 }
 
 int mandelbrot_pixel(std::complex<double> start) 
@@ -184,15 +184,15 @@ void save_bmp(std::string filename,
 int main(int argc, char *argv[])
 {
   // parameters checking
-  if(argc != 5){
+  if(argc != 6){
     std::cout << "Usage: " << argv[0] 
-              << " width height output mode" << std::endl;
+              << " width height output mode nr_threads" << std::endl;
     return -1;
   }
   int width{std::stoi(argv[1])};
   int height{std::stoi(argv[2])};    
   std::string output_file{argv[3]};
-  auto exec = execution_mode(argv[4]);
+  auto exec = execution_mode(argv[4], std::stoi(argv[5]));
 
   std::chrono::time_point<std::chrono::system_clock> start, end;
 

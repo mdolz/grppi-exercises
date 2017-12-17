@@ -59,14 +59,14 @@ void moving_average(int win_size,
   // ****** to here ***** //
 }
 
-grppi::dynamic_execution execution_mode(const std::string & opt) 
+grppi::dynamic_execution execution_mode(const std::string & opt, int nr_threads) 
 {
-   using namespace grppi;
-   if ("seq" == opt) return sequential_execution{};
-   if ("thr" == opt) return parallel_execution_native{};
-   if ("omp" == opt) return parallel_execution_omp{};
-   if ("tbb" == opt) return parallel_execution_tbb{};
-   return {};
+  using namespace grppi;
+  if ("seq" == opt) return sequential_execution{};
+  if ("thr" == opt) return parallel_execution_native{nr_threads};
+  if ("omp" == opt) return parallel_execution_omp{nr_threads};
+  if ("tbb" == opt) return parallel_execution_tbb{nr_threads};
+  return {};
 }
 
 int read_sensor()
@@ -78,16 +78,16 @@ int read_sensor()
 int main(int argc, char *argv[]) 
 {
   // parameters checking
-  if(argc != 5){
+  if(argc != 6){
     std::cout << "Usage: " << argv[0] 
-              << " window_size slide num_items mode" << std::endl;
+              << " window_size slide num_items mode nr_threads" << std::endl;
     return -1;
   } 
 
   auto win_size = std::stoi(argv[1]);
   auto slide = std::stoi(argv[2]);
   auto num_items = std::stol(argv[3]);
-  auto exec = execution_mode(argv[4]); 
+  auto exec = execution_mode(argv[4], std::stoi(argv[5])); 
   
   auto start = std::chrono::high_resolution_clock::now();
   moving_average(win_size, slide, num_items, exec);
