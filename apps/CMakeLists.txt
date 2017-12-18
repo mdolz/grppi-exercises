@@ -8,4 +8,3 @@ add_subdirectory(mergesort)
 
 # Streaming patterns
 add_subdirectory(mandelbrot_video)
-add_subdirectory(sensor)
